@@ -1,0 +1,16 @@
+---
+
+- name: Setup Webserver
+  hosts: webservers
+  remote_user: ec2-user
+
+  tasks:
+    - name: Installing httpd 
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Writing httpd conf
+      ansible.builtin.template:
+        src: ./files/httpd.j2
+        dest: /etc/httpd.conf

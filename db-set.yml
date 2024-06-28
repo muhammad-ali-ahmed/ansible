@@ -1,0 +1,51 @@
+---
+
+- name: Set up Database on db01
+  hosts: db01
+  remote_user: vagrant
+  become: yes
+    # vars:
+    #db_name: accounts
+    #db_user: ali
+    #db_pass: password@!
+
+  tasks:
+    - name: Printing variable names
+      debug:
+        var: db_user
+    - name: Installing db service
+      yum:
+        name: mariadb-server
+        state: present
+
+    - name: Enabling maria db service
+      ansible.builtin.service:
+        name: mariadb
+        enabled: yes
+
+    - name: Installing required packages
+      yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: Creating Database
+      mysql_db:
+        name: "{{db_name}}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+
+    - name: Creating User for Database
+      mysql_user:
+        name: "{{db_user}}"
+        password: "{{db_pass}}"
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      register: dbout
+
+    - name: Printing output vairable
+      debug:
+        var: dbout
+
+          
